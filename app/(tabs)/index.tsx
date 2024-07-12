@@ -15,21 +15,13 @@ import TicTacToeScreen from '../screen/TicTacToeScreen';
 import MemoryMatchingGameScreen from '../screen/MemoryMatchingGameScreen';
 import RockPaperScissorsScreen from '../screen/RockPaperScissorsScreen';
 import { auth } from '../../firebase/firebase'
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useEffect, useState } from 'react';
-import Logout from '../screen/Logout';
 
-// const auth = getAuth();
-
-
-
-
-// import { Children } from 'react';
-// import { Stack } from 'expo-router';
 const Stack = createStackNavigator();
 
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }: { navigation: any }) {
   const [userVerified, setUserVerified] = useState<any>();
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -45,31 +37,19 @@ export default function HomeScreen() {
       }
     });
   }, [])
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUserVerified(null);  // Update the state to trigger re-render
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
   return (
     <>
 
-      {/* <PaperProvider> */}
-      {/* <NavigationContainer> */}
-
-      {/* <Stack.Navigator initialRouteName="Login"   >
-
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="GameFeed" component={GameFeedScreen} />
-        <Stack.Screen name="GameDetail" component={GameDetailScreen} />
-        <Stack.Screen name="GameDashboard" component={GameDashboardScreen} />
-        <Stack.Screen name="TriviaGame" component={TriviaGameScreen} />
-        <Stack.Screen name="RockPaperScissors" component={RockPaperScissorsScreen} />
-        <Stack.Screen name="MemoryMatchingGame" component={MemoryMatchingGameScreen} />
-        <Stack.Screen name="TicTacToe" component={TicTacToeScreen} />
-
-
-      </Stack.Navigator> */}
-      {/* </NavigationContainer> */}
-      {/* </PaperProvider> */}
 
       <PaperProvider>
-        {/* <NavigationContainer> */}
 
         <Stack.Navigator initialRouteName="Login">
 
@@ -77,11 +57,11 @@ export default function HomeScreen() {
           {userVerified ? (
             <>
 
-              <Stack.Screen name="GameFeed" component={GameFeedScreen} options={({ navigation }) => ({
+              <Stack.Screen name="GameFeed" component={GameFeedScreen} options={({ }) => ({
                 headerRight: () => (
                   <IconButton
                     icon="logout"
-                    onPress={() => navigation.navigate(`Login`)}
+                    onPress={handleLogout}
                   />
                 ),
               })} />
